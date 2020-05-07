@@ -1,0 +1,115 @@
+=typography-sizing($t:'')
+  @each $size in $sizes
+    $i: index($sizes, $size)
+    .size-#{$i}#{if($target == '', '', '-' + $target)}
+      font-size: $size !important
+
++typography-size()
+
++mobile
+  +typography-size('mobile')
+
++tablet
+  +typography-size('tablet')
+
++touch
+  +typography-size('touch')
+
++desktop
+  +typography-size('desktop')
+
++widescreen
+  +typography-size('widescreen')
+
++fullhd
+  +typography-size('fullhd')
+
+$alignments: ('centered': 'center', 'justified': 'justify', 'left': 'left', 'right': 'right')
+
+@each $alignment, $text-align in $alignments
+  .text-#{$alignment}
+    text-align: #{$text-align} !important
+
+@each $alignment, $text-align in $alignments
+  +mobile
+    .text-#{$alignment}-mobile
+      text-align: #{$text-align} !important
+  +tablet
+    .text-#{$alignment}-tablet
+      text-align: #{$text-align} !important
+  +tablet-only
+    .text-#{$alignment}-tablet-only
+      text-align: #{$text-align} !important
+  +touch
+    .text-#{$alignment}-touch
+      text-align: #{$text-align} !important
+  +desktop
+    .text-#{$alignment}-desktop
+      text-align: #{$text-align} !important
+  +desktop-only
+    .text-#{$alignment}-desktop-only
+      text-align: #{$text-align} !important
+  +widescreen
+    .text-#{$alignment}-widescreen
+      text-align: #{$text-align} !important
+  +widescreen-only
+    .text-#{$alignment}-widescreen-only
+      text-align: #{$text-align} !important
+  +fullhd
+    .text-#{$alignment}-fullhd
+      text-align: #{$text-align} !important
+
+.capitalized
+  text-transform: capitalize !important
+
+.lowercase
+  text-transform: lowercase !important
+
+.uppercase
+  text-transform: uppercase !important
+
+.italic
+  font-style: italic !important
+
+@each $name, $pair in $colors
+  $color: nth($pair, 1)
+  .text-#{$name}
+    color: $color !important
+  a.text-#{$name}
+    &:hover,
+    &:focus
+      color: bulmaDarken($color, 10%) !important
+  .background-#{$name}
+    background-color: $color !important
+
+@each $name, $shade in $shades
+  .text-#{$name}
+    color: $shade !important
+  .background-#{$name}
+    background-color: $shade !important
+
+.text-weight-light
+  font-weight: $weight-300 !important
+.text-weight-normal
+  font-weight: $weight-400 !important
+.text-weight-medium
+  font-weight: $weight-500 !important
+.text-weight-semibold
+  font-weight: $weight-600 !important
+.text-weight-bold
+  font-weight: $weight-700 !important
+
+.family-primary
+  font-family: $family-primary !important
+
+.family-secondary
+  font-family: $family-secondary !important
+
+.family-sans-serif
+  font-family: $family-sans-serif !important
+
+.family-monospace
+  font-family: $family-monospace !important
+
+.family-code
+  font-family: $family-code !important

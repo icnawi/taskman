@@ -1,21 +1,24 @@
 import React, { Component } from 'react';
-import { render } from 'react-dom';
-import { Provider } from 'react-redux';
-import configureStore from './store';
+import {render} from 'react-dom';
+import './styles/main.sass'
 
-import App from './containers/App';
 
-const store = configureStore();
+class Root extends Component {
+    render(): JSX.Element {
+        return (
+            <div className="app-container">
+                <h1 className="app-container typography-heading-1 error">
+                    It's Taskman, man
+                </h1>
+            </div>
+        );
+    }
+}
 
-const Root = () => (
-    <Provider store={store}>
-        <App />
-    </Provider>
-);
 
-const rootTag = <Root />;
+const rootTag: JSX.Element = <Root />;
 
 render(
     rootTag,
-    document.getElementById("application")
+    document.getElementById("app-root")
 );

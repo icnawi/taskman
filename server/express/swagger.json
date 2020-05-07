@@ -1,0 +1,551 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Korto a simple tasks management API for a `CRUD` app",
+    "version": "0.1",
+    "title": "API for Korto app",
+    "contact": {
+      "email": "eugenekarakulin@gmail.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Users",
+      "description": "User auth"
+    },
+    {
+      "name": "Tasks",
+      "description": "All operations on tasks"
+    }
+  ],
+  "servers": [
+    {
+      "url": "/api",
+      "description": "REST API"
+    }
+  ],
+  "paths": {
+    "/auth": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "User auth",
+        "description": "Successful auth issues token. This one expires in 24 hours",
+        "operationId": "auth",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "User is authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "token": {
+                      "$ref": "#/components/schemas/JWT"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "Wrong user credentials or user is not found"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "Validation failed"
+                    },
+                    "fields": {
+                      "properties": {
+                        "email": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "example": "The email field is required."
+                          }
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "foobar@mail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "asdfgh"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Register new users",
+        "description": "Register a new user in order to test api",
+        "operationId": "createUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "foobar@mail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "asdfgh"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User has been successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "token": {
+                      "$ref": "#/components/schemas/JWT"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "List all the tasks from DB",
+        "description": "Returns JSON with tasks and meta",
+        "operationId": "getAllTasks",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting option with directions (asc/desc)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "title asc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "tasks": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TaskPresenter"
+                      }
+                    },
+                    "meta": {
+                      "properties": {
+                        "current": {
+                          "description": "Current page number",
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "limit": {
+                          "description": "Max limit of items per page to show",
+                          "type": "integer",
+                          "example": 15
+                        },
+                        "count": {
+                          "description": "Amount of items <= the limit per page",
+                          "type": "integer",
+                          "example": 14
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Create task",
+        "description": "",
+        "operationId": "addTask",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Finish the code review"
+                  },
+                  "dueBy": {
+                    "description": "Due date in the Unix timestamp (seconds)",
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "example": 1549477494,
+                    "nullable": true
+                  },
+                  "priority": {
+                    "$ref": "#/components/schemas/Priority"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "task": {
+                      "$ref": "#/components/schemas/TaskPresenter"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "This action is unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "This action is unauthorized."
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "Validation failed"
+                    },
+                    "fields": {
+                      "properties": {
+                        "title": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "example": "The title field is required."
+                          }
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tasks/{task}": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Task's details",
+        "operationId": "getTaskById",
+        "parameters": [
+          {
+            "name": "task",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "task": {
+                      "$ref": "#/components/schemas/TaskPresenter"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Tasks"],
+        "summary": "Update current task",
+        "operationId": "updateTask",
+        "parameters": [
+          {
+            "name": "task",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Finish code review"
+                  },
+                  "dueBy": {
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "example": 1549477494,
+                    "nullable": true
+                  },
+                  "priority": {
+                    "$ref": "#/components/schemas/Priority"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "task": {
+                      "$ref": "#/components/schemas/TaskPresenter"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Tasks"],
+        "summary": "Delete a task",
+        "operationId": "removeTask",
+        "parameters": [
+          {
+            "name": "task",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Removed",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "JWT": {
+        "type": "string",
+        "example": "eyJ0*"
+      },
+      "Priority": {
+        "type": "string",
+        "enum": [
+          "Low",
+          "Normal",
+          "High"
+        ],
+        "example": "High",
+        "nullable": true
+      },
+      "ErrorPresenter": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Oops... Something went wrong"
+          }
+        },
+        "type": "object"
+      },
+      "TaskPresenter": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 43
+          },
+          "title": {
+            "type": "string",
+            "example": "Accomplish code review"
+          },
+          "dueBy": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "example": 1549477494,
+            "nullable": true
+          },
+          "priority": {
+            "type": "string",
+            "example": "High",
+            "nullable": true
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "Using header 'Authorization' (with a value 'Bearer ACCESS_TOKEN')",
+        "name": "Bearer Auth Scheme",
+        "bearerFormat": "JWT",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
